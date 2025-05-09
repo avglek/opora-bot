@@ -1,0 +1,4 @@
+pydantic~=2.11.4
+aiogram~=3.20.0.post0
+environs~=14.1.1
+aiogram_dialog~=2.3.1
