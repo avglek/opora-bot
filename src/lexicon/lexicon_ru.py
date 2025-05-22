@@ -1,3 +1,5 @@
+from unicodedata import category
+
 LEXICON_RU: dict[str, str] = {
     # Commands
     '/start': 'Привет!\n\nВас приветствует бот компании "Опора"!\n\n'
@@ -12,7 +14,7 @@ LEXICON_RU: dict[str, str] = {
     'no_echo': 'Данный тип апдейтов не поддерживается '
                'методом send_copy',
 
-
+    '/categories':'Выберите категорию:',
 
     'but_5': 'Кнопка 5',
     'but_6': 'Кнопка 6',

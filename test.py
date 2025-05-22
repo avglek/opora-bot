@@ -1,4 +1,4 @@
-from src.lexicon.lexicon_ru import BUTTONS_START
+from src.lexicon.lexicon_ru import BUTTONS_START,LEXICON_RU
 
 print(BUTTONS_START)
 
@@ -10,3 +10,4 @@ print('===========================')
 lam =lambda a: a
 
 print(lam(BUTTONS_START))
+print(LEXICON_RU['/start'])

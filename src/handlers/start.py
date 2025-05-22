@@ -3,13 +3,12 @@ from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram_dialog import setup_dialogs, DialogManager, StartMode
 
-from .dialog import dialog, DialogSG
+from src.dialogs import register_dialogs
+from src.dialogs.bot_menu.states import BotMenu
 
 router: Router = Router()
-
-router.include_router(dialog)
-setup_dialogs(router)
+register_dialogs(router)
 
 @router.message(Command("start"))
 async def start(message: Message, dialog_manager: DialogManager):
-    await dialog_manager.start(DialogSG.home, mode=StartMode.RESET_STACK)
+    await dialog_manager.start(BotMenu.select_categories, mode=StartMode.RESET_STACK)
