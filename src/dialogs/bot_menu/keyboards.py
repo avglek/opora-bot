@@ -1,6 +1,6 @@
 import operator
 
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Select
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column
 from aiogram_dialog.widgets.text import Format
 
 SCROLLING_HEIGHT = 6
@@ -20,11 +20,13 @@ def paginated_categories(on_click):
     )
 
 
-def hello_keyboard(on_click):
-    return Select(
-        Format('{item[0]}'),
-        id = 's_hello',
-        item_id_getter=operator.itemgetter(1),
-        items = 'hello',
-        on_click = on_click
+def main_menu_keyboard(on_click):
+    return Column(
+        Select(
+            Format('{item[0]}'),
+            id = 's_main_menu',
+            item_id_getter=operator.itemgetter(1),
+            items = 'main_menu',
+            on_click = on_click,
+        )
     )

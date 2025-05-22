@@ -13,3 +13,8 @@ async def on_chosen_category(
     ctx = manager.current_context()
     ctx.dialog_data.update(category_id=item_id)
     await manager.switch_to(BotMenu.select_products)
+
+async def on_chosen_menu(c: CallbackQuery, widget:Select, manager:DialogManager, item_id:str):
+    ctx = manager.current_context()
+    ctx.dialog_data.update(hello_id=item_id)
+    await manager.switch_to(BotMenu.select_categories)

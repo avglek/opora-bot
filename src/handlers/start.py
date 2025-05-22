@@ -11,4 +11,4 @@ register_dialogs(router)
 
 @router.message(Command("start"))
 async def start(message: Message, dialog_manager: DialogManager):
-    await dialog_manager.start(BotMenu.select_categories, mode=StartMode.RESET_STACK)
+    await dialog_manager.start(BotMenu.main_menu, mode=StartMode.RESET_STACK)

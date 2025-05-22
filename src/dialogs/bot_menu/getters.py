@@ -1,5 +1,7 @@
 from aiogram_dialog import DialogManager
 
+from src.lexicon.lexicon_ru import MAIN_MENU
+
 
 async def get_categories(dialog_manager: DialogManager, **middleware_data):
     # session = middleware_data.get('session')
@@ -21,4 +23,10 @@ async def get_categories(dialog_manager: DialogManager, **middleware_data):
             ]
     }
 
+    return data
+
+async def get_main_menu(dialog_manager: DialogManager, **middleware_data):
+    data = {
+        'main_menu': MAIN_MENU
+    }
     return data

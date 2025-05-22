@@ -6,6 +6,7 @@ from src.dialogs.bot_menu import windows
 def bot_menu_dialog():
     return [
         Dialog(
+            windows.main_menu_window(),
             windows.categories_window(),
             # windows.products_window(),
             # windows.product_info_window(),
