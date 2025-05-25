@@ -1,7 +1,7 @@
 import operator
 
-from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column
-from aiogram_dialog.widgets.text import Format
+from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column, Button
+from aiogram_dialog.widgets.text import Format, Const
 
 SCROLLING_HEIGHT = 6
 
@@ -29,4 +29,9 @@ def main_menu_keyboard(on_click):
             items = 'main_menu',
             on_click = on_click,
         )
+    )
+
+def add_contact_keyboard(on_click):
+    return Column(
+        Button(Const('Добавить контакт'), id = 'b_add_contact', on_click = on_click)
     )

@@ -13,8 +13,8 @@ def bot_menu_dialog():
             #
             # on_process_result=windows.on_process_result,
         ),
-        # Dialog(
-        #     windows.buy_product_window(),
-        #     windows.confirm_buy_window()
-        # )
+        Dialog(
+            windows.add_contact_window(),
+            # windows.confirm_buy_window()
+        )
         ]

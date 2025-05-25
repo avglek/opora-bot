@@ -24,3 +24,13 @@ def categories_window()-> Window:
         state=states.BotMenu.select_categories,
         getter=getters.get_categories
     )
+
+def add_contact_window()-> Window:
+    return Window(
+        Const(LEXICON_RU['/add_contact']),
+        keyboards.add_contact_keyboard(selected.on_chosen_add_contact),
+        Back(Const(CONST_BACK)),
+        Cancel(Const('Exit')),
+        state=states.MessageGroup.add_contact
+    )
+

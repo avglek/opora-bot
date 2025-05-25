@@ -6,3 +6,6 @@ class BotMenu(StatesGroup):
     select_categories = State()
     select_products = State()
     product_info = State()
+
+class MessageGroup(StatesGroup):
+    add_contact = State()
