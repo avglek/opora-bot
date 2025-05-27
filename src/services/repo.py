@@ -1,11 +1,7 @@
 from dataclasses import dataclass
-from typing import Any, Type, Coroutine
-from unicodedata import category
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 import src.models.rent_models as models
-
 
 @dataclass
 class Category:
@@ -34,15 +30,47 @@ class Repo:
     def __init__(self,session:Session) -> None:
         self.session = session
 
-    def get_categories(self) -> dict[str, tuple[str, int]]:
+    async def get_rents_by_category(self, category_id):
         if self.session:
-            stm = select(models.Category)
+            stm = select(models.Category).where(models.Category.id == category_id)
             rows = self.session.execute(stm).all()
-            result = {'categories': []}
-            for row in rows:
-                result['categories'].append((row.Category.name, row.Category.id))
+
+            result = list()
+            for rent in rows[0].Category.rents:
+                item = Rent(rent.id,rent.name,rent.description,rent.img,rent.price_id)
+                result.append(item)
+
             return result
 
         else:
+            result = []
+        return result
+
+    async def get_all_categories(self):
+        if self.session:
+            stm = select(models.Category)
+            rows = self.session.execute(stm).all()
+
+            result = list()
+            for row in rows:
+                item = Category(row.Category.id,row.Category.name,row.Category.description)
+                result.append(item)
+            return result
+        else:
             return []
+
+    async def get_rent_by_id(self,rent_id):
+        if self.session:
+            stm = select(models.Rent).where(models.Rent.id == rent_id)
+            row = self.session.execute(stm).all()
+            result = Rent(
+                row[0].Rent.id,
+                row[0].Rent.name,
+                row[0].Rent.description,
+                row[0].Rent.img,
+                row[0].Rent.price_id)
+            return result
+        else:
+            return None
+
 

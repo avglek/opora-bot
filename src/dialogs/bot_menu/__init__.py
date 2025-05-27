@@ -8,8 +8,8 @@ def bot_menu_dialog():
         Dialog(
             windows.main_menu_window(),
             windows.categories_window(),
-            # windows.products_window(),
-            # windows.product_info_window(),
+            windows.rents_window(),
+            windows.rent_info_window(),
             #
             # on_process_result=windows.on_process_result,
         ),

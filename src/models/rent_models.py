@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List,Any
 
+from aiogram_dialog.api.entities import MediaAttachment
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import  Column, Integer, String, ForeignKey,Table
 from sqlalchemy.orm import relationship,Mapped
