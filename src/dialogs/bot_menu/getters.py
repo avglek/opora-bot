@@ -43,6 +43,17 @@ async def get_rent_info(dialog_manager: DialogManager, **middleware_data):
     rent_id = ctx.dialog_data.get('rent_id')
 
     rent:Rent = await repo.get_rent_by_id(rent_id)
+    ctx.dialog_data.update(price_id=rent.price_id)
     photo = MediaAttachment(type=ContentType.PHOTO, path=os.path.join(src_dir, rent.img + '.png'))
 
     return {'rent_info':rent,'photo':photo}
+
+
+async def get_price_info(dialog_manager: DialogManager, **middleware_data):
+    repo:Repo = middleware_data.get('repo')
+    ctx = dialog_manager.current_context()
+
+    price_id = ctx.dialog_data.get('price_id')
+    price_info = await repo.get_price_info_by_id(price_id)
+
+    return {'price_info':price_info}

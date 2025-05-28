@@ -30,7 +30,6 @@ def load_config() -> Config:
         tg_bot=TelegramBotConfig(token=env.str('BOT_TOKEN')),
         db=DatabaseConfig(
             localdb=env.str('LOCAL_DB_PATH'),
-            testdb=env.str('TEST_DB_PATH')
         ),
         path_img=env.str('PATH_IMG')
     )

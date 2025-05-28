@@ -3,6 +3,8 @@ import operator
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column, Button
 from aiogram_dialog.widgets.text import Format, Const
 
+from src.lexicon.lexicon_ru import LEXICON_RU, CONST_HOME
+
 SCROLLING_HEIGHT = 6
 
 
@@ -46,3 +48,26 @@ def rents_keyboard(on_click):
             on_click = on_click,
         )
     )
+
+def rent_info_keyboard(on_click):
+    return Column(
+        Button(Const(LEXICON_RU['/show_price']), id = 'b_show_price', on_click = on_click)
+    )
+
+def home_button(on_click):
+    return Column(
+        Button(Const(CONST_HOME), id = 'b_home', on_click = on_click)
+    )
+
+
+def price_info_keyboard(on_click):
+    return Column(
+        Select(
+            Format('{item.period}: {item.price} ({item.currency})'),
+            id = 's_price_info',
+            item_id_getter=operator.attrgetter('id'),
+            items = 'price_info',
+            on_click = on_click,
+        )
+    )
+
