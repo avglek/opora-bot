@@ -34,6 +34,14 @@ class PriceInfo:
     price:int
     currency:str
 
+@dataclass
+class OrderInfo:
+    rent_name:str
+    period:str
+    period_ru:str
+    price:int
+    currency:str
+
 class Repo:
 
     def __init__(self,session:Session) -> None:
@@ -103,4 +111,41 @@ class Repo:
         else:
             return None
 
+    async def get_order_info(self,rent_id,price_id,period_id)->OrderInfo|None:
+        print(f'rent_id:{rent_id},price_id:{price_id},period_id:{period_id}')
+        if self.session:
+            stm_rent = select(models.Rent).where(models.Rent.id == rent_id)
+            stm_price = select(models.Price).where(models.Price.id == price_id)
+            row_rent = self.session.execute(stm_rent).all()
+            row_price = self.session.execute(stm_price).all()
+
+            rent_name = row_rent[0].Rent.name
+
+            price = Price(
+                row_price[0].Price.id,
+                row_price[0].Price.month,
+                row_price[0].Price.two_week,
+                row_price[0].Price.day,
+                row_price[0].Price.currency
+            )
+            price_info = 0,
+            period = ''
+
+            match period_id:
+                case 1:
+                    price_info = price.month
+                    period = 'month'
+                case 2:
+                    price_info = price.two_week
+                    period = 'two_week'
+                case 3:
+                    price_info = price.day
+                    period = 'day'
+
+            period_ru = PRICE_PERIOD[period]
+
+
+            return OrderInfo(rent_name,period,period_ru,price_info,price.currency)
+        else:
+            return None
 

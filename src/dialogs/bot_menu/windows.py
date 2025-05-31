@@ -1,9 +1,10 @@
-from aiogram_dialog import Window
+from aiogram_dialog import Window, DialogManager
 from aiogram_dialog.widgets.kbd import Cancel, Back, Button
 from aiogram_dialog.widgets.media import StaticMedia, DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
 from src.dialogs.bot_menu import selected, states, getters, keyboards
-from src.lexicon.lexicon_ru import LEXICON_RU, CONST_BACK
+from src.dialogs.bot_menu.states import BotMenu
+from src.lexicon.lexicon_ru import LEXICON_RU, CONST_BACK,PRICE_PERIOD
 
 def main_menu_window() -> Window:
     return Window(
@@ -83,15 +84,19 @@ def order_window()-> Window:
 
 def add_to_order_window()-> Window:
     return Window(
-        Const(LEXICON_RU['/add_to_order']),
-        Back(Const(CONST_BACK)),
+        Format('Вы выбрали:{order_info.rent_name}\nСрок аренды: {order_info.period_ru}\nЦена: {order_info.price} ({order_info.currency})'),
+        keyboards.add_to_order_keyboard(selected.on_chosen_add_to_order),
+        Cancel(
+            Const(CONST_BACK)
+        ),
+        getter=getters.get_order_info,
         state=states.OrderRent.add_to_order
     )
 
 def order_complete_window()-> Window:
     return Window(
         Const(LEXICON_RU['/order_complete']),
-        Back(Const(CONST_BACK)),
+        Cancel(Const(CONST_BACK)),
         state=states.OrderRent.order_complete
     )
 
@@ -100,3 +105,7 @@ def confirm_buy_window()-> Window:
     return Window(
         Const(LEXICON_RU['/confirm_buy'])
     )
+
+
+# async def on_process_result(manager:DialogManager):
+#     await manager.switch_to(BotMenu.main_menu)

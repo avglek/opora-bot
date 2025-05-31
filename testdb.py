@@ -18,8 +18,14 @@ session = Session(engine)
 
 repo = Repo(session)
 
+#{'rent_id': '6', 'price_id': 4, 'period_id': '2'}
+#rent_id:7,price_id:2,period_id:1
+
 async def main() -> None:
-    print(await repo.get_price_info_by_id(1))
+    print(await repo.get_order_info(
+        rent_id=7,
+        price_id=2,
+        period_id=1))
 
 if __name__ == "__main__":
     asyncio.run(main())

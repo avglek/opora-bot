@@ -57,3 +57,20 @@ async def get_price_info(dialog_manager: DialogManager, **middleware_data):
     price_info = await repo.get_price_info_by_id(price_id)
 
     return {'price_info':price_info}
+
+
+async def get_order_info(dialog_manager: DialogManager, **middleware_data):
+    repo:Repo = middleware_data.get('repo')
+    ctx = dialog_manager.current_context()
+    print(ctx.start_data)
+    rent_id = ctx.start_data.get('rent_id')
+    price_id = ctx.start_data.get('price_id')
+    period_id = ctx.start_data.get('period_id')
+
+    order_info = await repo.get_order_info(
+        rent_id=rent_id,
+        price_id=price_id,
+        period_id=period_id
+    )
+
+    return {'order_info':order_info}
