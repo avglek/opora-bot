@@ -4,15 +4,15 @@ from aiogram.enums import ContentType
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment
 
-from config import Config, load_config
+from config import Settings
 from src.dialogs.bot_menu.states import BotMenu
 from src.lexicon.lexicon_ru import MAIN_MENU, LEXICON_RU
 
 from src.services.repo import Repo, Rent
 
-config:Config = load_config()
+settings = Settings()
 
-src_dir = os.path.normpath(os.path.join(os.getcwd(),config.path_img))
+src_dir = os.path.normpath(os.path.join(os.getcwd(),settings.PATH_IMG))
 
 async def get_main_menu(dialog_manager: DialogManager, **middleware_data):
     return {'main_menu': MAIN_MENU}

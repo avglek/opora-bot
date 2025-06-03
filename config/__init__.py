@@ -1,1 +1,2 @@
-from .config import Config, load_config
+from .main import Settings,database_url
+

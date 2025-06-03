@@ -1,46 +1,60 @@
 import asyncio
-import logging
+import os
+import sys
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from aiogram.fsm.storage.memory import MemoryStorage
+from loguru import logger
 
-from config import Config, load_config
-from src.handlers import start
-from src.middleware.custom_middleware import CustomMiddleware
-from src.services.repo import Repo
+from config import Settings
+from src.handlers import start, echo
+# from src.middleware.custom_middleware import CustomMiddleware
+# from src.services.repo import Repo
 
-logger = logging.getLogger(__name__)
+# Функция, которая выполнится когда бот запустится
+async def start_bot():
+    logger.info("Бот успешно запущен.")
+
+
+# Функция, которая выполнится когда бот завершит свою работу
+async def stop_bot():
+    logger.info("Бот остановлен!")
 
 async def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(filename)s:%(lineno)d #%(levelname)-8s '
-        '[%(asctime)s] - %(name)s - %(message)s',
-    )
 
-    logger.info('Starting bot')
+    settings = Settings()
 
-    config: Config = load_config()
+    # Инициализируем бота и диспетчер
+    bot = Bot(token=settings.BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    dp = Dispatcher(storage=MemoryStorage())
+    #admins = settings.ADMIN_IDS
 
-    engine = create_engine(config.db.get_local_url(), echo=True)
-    session = Session(engine)
-    repo = Repo(session)
+    #log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log.txt")
+    #logger.add(log_file_path, format=settings.FORMAT_LOG, level="INFO", rotation=settings.LOG_ROTATION)
+    logger.add(sys.stdout,format=settings.FORMAT_LOG, level="INFO")
+    # repo: Repo = Repo()
 
-    bot: Bot = Bot(
-        token=config.tg_bot.token,
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-    )
+    # регистрация мидлварей
+    # dp.update.middleware.register(DatabaseMiddlewareWithoutCommit())
+    # dp.update.middleware.register(DatabaseMiddlewareWithCommit())
+    # dp.update.middleware.register(CustomMiddleware(repo))
 
-    dp: Dispatcher = Dispatcher()
+    # регистрация роутеров
+    #dp.include_router(start.router)
+    dp.include_router(echo.router)
 
-    dp.update.middleware(CustomMiddleware(repo))
-    dp.include_router(start.router)
+    # регистрация функций
+    dp.startup.register(start_bot)
+    dp.shutdown.register(stop_bot)
 
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    # запуск бота в режиме long polling при запуске бот очищает все обновления, которые были за его моменты бездействия
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+    finally:
+        await bot.session.close()
 
 
 if __name__ == '__main__':
