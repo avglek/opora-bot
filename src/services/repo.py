@@ -1,60 +1,19 @@
-from dataclasses import dataclass
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-import src.models.rent_models as models
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.dao.dao import CategoryDao, RentDao, PriceDao
 from src.lexicon.lexicon_ru import PRICE_PERIOD
+from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo
 
-
-@dataclass
-class Category:
-    id:int
-    name:str
-    description:str
-
-@dataclass
-class Rent:
-    id:int
-    name:str
-    description:str
-    img:str
-    price_id:str
-
-@dataclass
-class Price:
-    id:int
-    month:int
-    two_week:int
-    day:int
-    currency:str
-
-@dataclass
-class PriceInfo:
-    id:int
-    period:str
-    price:int
-    currency:str
-
-@dataclass
-class OrderInfo:
-    rent_name:str
-    period:str
-    period_ru:str
-    price:int
-    currency:str
 
 class Repo:
 
-    def __init__(self,session:Session) -> None:
-        self.session = session
-
-    async def get_rents_by_category(self, category_id)->list[Rent]:
-        if self.session:
-            stm = select(models.Category).where(models.Category.id == category_id)
-            rows = self.session.execute(stm).all()
+    @staticmethod
+    async def get_rents_by_category(category_id:int, session: AsyncSession)->list[Rent]:
+        if session:
 
             result = list()
-            for rent in rows[0].Category.rents:
-                item = Rent(rent.id,rent.name,rent.description,rent.img,rent.price_id)
+            rows = await RentDao.get_by_category(category_id=category_id,session=session)
+            for row in rows:
+                item = Rent.model_validate(row)
                 result.append(item)
 
             return result
@@ -63,89 +22,67 @@ class Repo:
             result = []
         return result
 
-    async def get_all_categories(self)->list[Category]:
-        if self.session:
-            stm = select(models.Category)
-            rows = self.session.execute(stm).all()
+    @staticmethod
+    async def get_all_categories(session: AsyncSession)->list[Category]:
+        if session:
+            categories = await CategoryDao.get_all(session=session)
 
             result = list()
-            for row in rows:
-                item = Category(row.Category.id,row.Category.name,row.Category.description)
+            for category in categories:
+                item = Category.model_validate(category)
                 result.append(item)
             return result
         else:
             return []
 
-    async def get_rent_by_id(self,rent_id)->Rent|None:
-        if self.session:
-            stm = select(models.Rent).where(models.Rent.id == rent_id)
-            row = self.session.execute(stm).all()
-            result = Rent(
-                row[0].Rent.id,
-                row[0].Rent.name,
-                row[0].Rent.description,
-                row[0].Rent.img,
-                row[0].Rent.price_id)
-            return result
+    @staticmethod
+    async def get_rent_by_id(rent_id:int, session: AsyncSession)->Rent|None:
+        if session:
+            row = await RentDao.find_one_or_none_by_id(data_id=rent_id,session=session)
+            return Rent.model_validate(row)
         else:
             return None
 
-    async def get_price_info_by_id(self,price_id)->list[PriceInfo]|None:
-        if self.session:
-            stm = select(models.Price).where(models.Price.id == price_id)
-            row = self.session.execute(stm).all()
-            price = Price(
-                row[0].Price.id,
-                row[0].Price.month,
-                row[0].Price.two_week,
-                row[0].Price.day,
-                row[0].Price.currency
-            )
+    @staticmethod
+    async def get_price_info_by_id(price_id:int,session: AsyncSession)->list[PriceInfo]|None:
+        if session:
+            price = await PriceDao.find_one_or_none_by_id(data_id=price_id,session=session)
 
-            result = [
-                PriceInfo(1,PRICE_PERIOD['month'],price.month,price.currency),
-                PriceInfo(2,PRICE_PERIOD['two_week'],price.two_week,price.currency),
-                PriceInfo(3,PRICE_PERIOD['day'],price.day,price.currency)
-            ]
-            return result
+            if price:
+                result = [
+                    PriceInfo(1,PRICE_PERIOD['month'],price.month,price.currency),
+                    PriceInfo(2,PRICE_PERIOD['two_week'],price.two_week,price.currency),
+                    PriceInfo(3,PRICE_PERIOD['day'],price.day,price.currency)
+                ]
+                return result
         else:
             return None
 
-    async def get_order_info(self,rent_id,price_id,period_id)->OrderInfo|None:
-        print(f'rent_id:{rent_id},price_id:{price_id},period_id:{period_id}')
-        if self.session:
-            stm_rent = select(models.Rent).where(models.Rent.id == rent_id)
-            stm_price = select(models.Price).where(models.Price.id == price_id)
-            row_rent = self.session.execute(stm_rent).all()
-            row_price = self.session.execute(stm_price).all()
+    @staticmethod
+    async def get_order_info(rent_id:int,period_id:int,session: AsyncSession)->OrderInfo|None:
 
-            rent_name = row_rent[0].Rent.name
+        if session:
+            rent:Rent|None = await RentDao.get_by_id_with_prices(rent_id=rent_id,session=session)
 
-            price = Price(
-                row_price[0].Price.id,
-                row_price[0].Price.month,
-                row_price[0].Price.two_week,
-                row_price[0].Price.day,
-                row_price[0].Price.currency
-            )
             price_info = 0,
             period = ''
 
             match period_id:
-                case 1:
-                    price_info = price.month
+                case '1':
+                    price_info = rent.price.month
                     period = 'month'
-                case 2:
-                    price_info = price.two_week
+                case '2':
+                    price_info = rent.price.two_week
                     period = 'two_week'
-                case 3:
-                    price_info = price.day
+                case '3':
+                    price_info = rent.price.day
                     period = 'day'
 
-            period_ru = PRICE_PERIOD[period]
+            price_ru = PRICE_PERIOD[period]
 
+            print(f'price_info:{price_info},period:{period},price_ru:{price_ru}')
 
-            return OrderInfo(rent_name,period,period_ru,price_info,price.currency)
+            return OrderInfo(rent.name,period,PRICE_PERIOD[period],price_info,rent.price.currency)
         else:
             return None
 

@@ -4,17 +4,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.dao.base import BaseDao
-from src.dao.models import Category, Rent, Price
+from src.dao.models import CategoryORM, RentORM, PriceORM
 
 
-class CategoryDao(BaseDao[Category]):
-    model = Category
+class CategoryDao(BaseDao[CategoryORM]):
+    model = CategoryORM
 
-class RentDao(BaseDao[Rent]):
-    model = Rent
+class RentDao(BaseDao[RentORM]):
+    model = RentORM
 
     @classmethod
-    async def get_by_category(cls, category_id: int,session:AsyncSession)->list[Rent]:
+    async def get_by_category(cls, category_id: int,session:AsyncSession)->list[RentORM]:
         """
         Получить список аренд по категориям
         :param category_id: id категории
@@ -22,7 +22,7 @@ class RentDao(BaseDao[Rent]):
         :return: список аренд по категории
         """
 
-        query = select(Category).filter_by(id=category_id).options(selectinload(Category.rents))
+        query = select(CategoryORM).filter_by(id=category_id).options(selectinload(CategoryORM.rents))
         logger.info(f"Получение всех записей из БД {cls.model.__name__} для категории {category_id}")
         try:
             result = await session.execute(query)
@@ -33,5 +33,29 @@ class RentDao(BaseDao[Rent]):
             logger.error(f"Ошибка при получении аренды по категории {category_id} из БД {cls.model.__name__}: {ex}")
             raise
 
-class PriceDao(BaseDao[Price]):
-    model = Price
+    @classmethod
+    async def get_by_id_with_prices(cls,rent_id:int,session:AsyncSession)->RentORM|None:
+        """
+        Получить аренду по id с ценами
+        :param rent_id: id аренды
+        :param session: сессия
+        :return: арендa по id с ценами по id
+        """
+        query = select(RentORM).filter_by(id=rent_id).options(selectinload(RentORM.price))
+        logger.info(f"Получение аренды с ценами по id {rent_id} из БД {cls.model.__name__}")
+        try:
+            if rent_id:
+                result = await session.execute(query)
+                record = result.scalars().first()
+                logger.info(f"Получена аренда с ценами по id {rent_id} из БД {cls.model.__name__}")
+                return record
+            else:
+                return None
+        except Exception as ex:
+            logger.error(f"Ошибка при получении аренды с ценами по id {rent_id} из БД {cls.model.__name__}: {ex}")
+            raise
+
+
+
+class PriceDao(BaseDao[PriceORM]):
+    model = PriceORM

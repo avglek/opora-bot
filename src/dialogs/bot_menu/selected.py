@@ -48,7 +48,6 @@ async def on_chosen_add_to_order(c: CallbackQuery, widget:Select, manager:Dialog
     ctx = manager.current_context()
     ctx.dialog_data.update(
         rent_id=ctx.start_data['rent_id'],
-        price_id=ctx.start_data['price_id'],
         period_id=ctx.start_data['period_id']
     )
     await manager.switch_to(OrderRent.show_order)

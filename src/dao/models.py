@@ -14,41 +14,41 @@ CategoryRent = Table(
     Column("rent_id",Integer,ForeignKey("rent.id"),primary_key=True)
     )
 
-class Category(Base):
+class CategoryORM(Base):
     __tablename__ = "category"
 
     name:str = Column(String,nullable=False)
     description:str = Column(String,nullable=True)
-    rents:Mapped[List[Rent]] = relationship("Rent",secondary=CategoryRent,back_populates="categories")
+    rents:Mapped[List[RentORM]] = relationship("RentORM",secondary=CategoryRent,back_populates="categories")
 
     def __repr__(self):
         return str(f"id:{self.id} name: {self.name}")
 
-class Rent(Base):
+class RentORM(Base):
     __tablename__="rent"
 
     name:str = Column(String,nullable=False)
     description:str = Column(String,nullable=True)
     img:str = Column(String,nullable=True)
-    price_id:str = Column(Integer, ForeignKey("price.id"))
-    price:Mapped[Price] = relationship("Price", back_populates="rents")
-    categories:Mapped[List[Category]] = relationship("Category",secondary=CategoryRent,back_populates="rents")
+    price_id:int = Column(Integer, ForeignKey("price.id"))
+    price:Mapped[PriceORM] = relationship("PriceORM", back_populates="rents")
+    categories:Mapped[List[CategoryORM]] = relationship("CategoryORM",secondary=CategoryRent,back_populates="rents")
 
     def __repr__(self):
         return str(f"id:{self.id} name: {self.name}")
 
-class Price(Base):
+class PriceORM(Base):
     __tablename__ = "price"
 
     month:int = Column(Integer)
     two_week:int = Column(Integer)
     day:int = Column(Integer)
     currency:str = Column(String)
-    rents:Mapped[List[Rent]] = relationship("Rent", back_populates="price")
+    rents:Mapped[List[RentORM]] = relationship("RentORM", back_populates="price")
 
     def __repr__(self):
         return str(f"day: {self.day}\ntwo week: {self.two_week}\nmonth: {self.month}\nprice: {self.currency}")
 
 
 def __all_models__():
-    return Category,Rent,Price,CategoryRent
+    return CategoryORM,RentORM,PriceORM,CategoryRent

@@ -92,19 +92,19 @@ def add_to_order_window()-> Window:
         getter=getters.get_order_info,
         state=states.OrderRent.add_to_order
     )
-
-def order_complete_window()-> Window:
-    return Window(
-        Const(LEXICON_RU['/order_complete']),
-        Cancel(Const(CONST_BACK)),
-        state=states.OrderRent.order_complete
-    )
-
-
-def confirm_buy_window()-> Window:
-    return Window(
-        Const(LEXICON_RU['/confirm_buy'])
-    )
+#
+# def order_complete_window()-> Window:
+#     return Window(
+#         Const(LEXICON_RU['/order_complete']),
+#         Cancel(Const(CONST_BACK)),
+#         state=states.OrderRent.order_complete
+#     )
+#
+#
+# def confirm_buy_window()-> Window:
+#     return Window(
+#         Const(LEXICON_RU['/confirm_buy'])
+#     )
 
 
 # async def on_process_result(manager:DialogManager):
