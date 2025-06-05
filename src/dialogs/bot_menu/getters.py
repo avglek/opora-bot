@@ -64,8 +64,6 @@ async def get_order_info(dialog_manager: DialogManager, **middleware_data):
     rent_id:int = ctx.start_data.get('rent_id')
     period_id:int = ctx.start_data.get('period_id')
 
-    print(f'rent_id: {rent_id}, period_id: {period_id}')
-
     order_info = await Repo.get_order_info(
         rent_id=rent_id,
         period_id=period_id,
@@ -73,3 +71,9 @@ async def get_order_info(dialog_manager: DialogManager, **middleware_data):
     )
 
     return {'order_info':order_info}
+
+async def get_all_orders(dialog_manager: DialogManager, **middleware_data):
+    ctx = dialog_manager.current_context()
+    print(ctx.dialog_data)
+
+    return {'quantity':90}

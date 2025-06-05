@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.dao.dao import CategoryDao, RentDao, PriceDao
+from src.dao.dao import CategoryDao, RentDao, PriceDao, OrderDao
 from src.lexicon.lexicon_ru import PRICE_PERIOD
-from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo
+from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo, Order
 
 
 class Repo:
@@ -78,11 +78,29 @@ class Repo:
                     price_info = rent.price.day
                     period = 'day'
 
-            price_ru = PRICE_PERIOD[period]
-
-            print(f'price_info:{price_info},period:{period},price_ru:{price_ru}')
-
             return OrderInfo(rent.name,period,PRICE_PERIOD[period],price_info,rent.price.currency)
         else:
             return None
+
+    @staticmethod
+    async def get_all_orders(session: AsyncSession)->list[OrderInfo]:
+        if session:
+            orders = await OrderDao.get_all(session=session)
+
+            result = list()
+            for order in orders:
+                item = Order.model_validate(order)
+                result.append(item)
+
+            return result
+        else:
+            return []
+
+    @staticmethod
+    async def add_order(order:Order,session: AsyncSession)->bool:
+        if session:
+            await OrderDao.add(values=order,session=session)
+            return True
+        else:
+            return False
 

@@ -24,6 +24,7 @@ LEXICON_RU: dict[str, str] = {
     '/order':'Ваш заказ:',
     '/add_to_order':'Добавить в заказ:',
     '/order_complete':'Ваш заказ принят!',
+    '/order_info':'Информация о заказе:',
 
     'error_category': 'Нет такой категории! Выберите другую.',
 }

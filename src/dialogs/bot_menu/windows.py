@@ -1,10 +1,13 @@
+from typing import Any
+
+from aiogram.types import Message
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.kbd import Cancel, Back, Button
-from aiogram_dialog.widgets.media import StaticMedia, DynamicMedia
+from aiogram_dialog.widgets.input import TextInput
+from aiogram_dialog.widgets.kbd import Cancel, Back
+from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format
 from src.dialogs.bot_menu import selected, states, getters, keyboards
-from src.dialogs.bot_menu.states import BotMenu
-from src.lexicon.lexicon_ru import LEXICON_RU, CONST_BACK,PRICE_PERIOD
+from src.lexicon.lexicon_ru import LEXICON_RU, CONST_BACK
 
 def main_menu_window() -> Window:
     return Window(
@@ -74,23 +77,38 @@ def add_contact_window()-> Window:
     )
 
 
-def order_window()-> Window:
-    return Window(
-        Const(LEXICON_RU['/order']),
-        Back(Const(CONST_BACK)),
-        state=states.OrderRent.show_order
-    )
+# def order_window()-> Window:
+#     return Window(
+#         Const(LEXICON_RU['/order']),
+#         Back(Const(CONST_BACK)),
+#         state=states.OrderRent.show_order
+#     )
 
 
 def add_to_order_window()-> Window:
     return Window(
         Format('Вы выбрали:{order_info.rent_name}\nСрок аренды: {order_info.period_ru}\nЦена: {order_info.price} ({order_info.currency})'),
-        keyboards.add_to_order_keyboard(selected.on_chosen_add_to_order),
+        Const('Введите количество:'),
+        TextInput(
+            id='quantity',
+            on_error=error,
+            on_success=selected.on_chosen_add_to_order,
+            type_factory=int,
+        ),
+        #keyboards.add_to_order_keyboard(selected.on_chosen_add_to_order),
         Cancel(
             Const(CONST_BACK)
         ),
         getter=getters.get_order_info,
         state=states.OrderRent.add_to_order
+    )
+
+def order_window()-> Window:
+    return Window(
+        Const(LEXICON_RU['/order_info']),
+        Back(Const(CONST_BACK)),
+        getter=getters.get_all_orders,
+        state=states.OrderRent.order_info
     )
 #
 # def order_complete_window()-> Window:
@@ -109,3 +127,11 @@ def add_to_order_window()-> Window:
 
 # async def on_process_result(manager:DialogManager):
 #     await manager.switch_to(BotMenu.main_menu)
+
+async def error(
+        message: Message,
+        dialog_: Any,
+        manager: DialogManager,
+        error_: ValueError
+):
+    await message.answer("Age must be a number!")

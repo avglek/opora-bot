@@ -11,8 +11,7 @@ class BotMenu(StatesGroup):
 
 class OrderRent(StatesGroup):
     add_to_order = State()
-    show_order = State()
-    order_complete = State()
+    order_info = State()
 
 class MessageGroup(StatesGroup):
     add_contact = State()

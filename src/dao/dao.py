@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.dao.base import BaseDao
-from src.dao.models import CategoryORM, RentORM, PriceORM
+from src.dao.models import CategoryORM, RentORM, PriceORM, OrderORM, UserORM
 
 
 class CategoryDao(BaseDao[CategoryORM]):
@@ -59,3 +59,9 @@ class RentDao(BaseDao[RentORM]):
 
 class PriceDao(BaseDao[PriceORM]):
     model = PriceORM
+
+class OrderDao(BaseDao[OrderORM]):
+    model = OrderORM
+
+class UserDao(BaseDao[UserORM]):
+    model = UserORM
