@@ -5,6 +5,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Select
 
 from src.dialogs.bot_menu.states import BotMenu, MessageGroup, OrderRent
+from src.lexicon.lexicon_ru import LEXICON_RU
 from src.models.repo_model import User, Order
 from src.services.repo import Repo
 
@@ -15,7 +16,7 @@ async def on_chosen_menu(c: CallbackQuery, widget:Select, manager:DialogManager,
     if item_id =='1':
         await manager.switch_to(BotMenu.select_categories)
     elif item_id == '2':
-        await manager.start(MessageGroup.add_contact)
+        await manager.start(MessageGroup.send_contact)
     else:
         await manager.start(MessageGroup.add_contact)
 
@@ -72,3 +73,11 @@ async def send_contact(cq: CallbackQuery, _, dialog_manager: DialogManager):
     ]], resize_keyboard=True)
     message = await cq.message.answer("Нажмите на кнопку ниже:", reply_markup=markup)
     dialog_manager.dialog_data["message_id"] = message.message_id
+
+
+async def get_contact(msg: Message,_, dialog_manager: DialogManager):
+    await msg.bot.delete_message(msg.chat.id, dialog_manager.dialog_data["message_id"])
+    print(msg.contact)
+    print(msg.from_user.id)
+    print(msg.contact.phone_number)
+    await msg.answer(LEXICON_RU['/success_contact'])

@@ -1,9 +1,10 @@
 from typing import Any
 
+from aiogram.enums import ContentType
 from aiogram.types import Message
 from aiogram_dialog import Window, DialogManager
-from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Cancel, Back
+from aiogram_dialog.widgets.input import TextInput, MessageInput
+from aiogram_dialog.widgets.kbd import Cancel, Back, Next
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format, List
 from src.dialogs.bot_menu import selected, states, getters, keyboards
@@ -69,11 +70,17 @@ def order_rent_window()-> Window:
 
 def add_contact_window()-> Window:
     return Window(
-        Const(LEXICON_RU['/add_contact']),
-        keyboards.add_contact_keyboard(selected.on_chosen_add_contact),
-        Back(Const(CONST_BACK)),
-        Cancel(Const('Exit')),
+        Const(LEXICON_RU['/continue']),
+        MessageInput(selected.get_contact, ContentType.CONTACT),
         state=states.MessageGroup.add_contact
+    )
+
+def send_contact_window()-> Window:
+    return Window(
+        Const(LEXICON_RU['/info_contact']),
+        Next(Const(LEXICON_RU['/send_contact']),on_click = selected.send_contact),
+        Cancel(Const('Exit')),
+        state=states.MessageGroup.send_contact
     )
 
 

@@ -21,8 +21,9 @@ def bot_menu_dialog():
             windows.order_window(),
             #windows.order_complete_window(),
         ),
-        # Dialog(
-        #     #windows.add_contact_window(),
-        # )
+        Dialog(
+            windows.send_contact_window(),
+            windows.add_contact_window(),
+        )
 
         ]

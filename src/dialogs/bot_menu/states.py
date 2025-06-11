@@ -15,3 +15,4 @@ class OrderRent(StatesGroup):
 
 class MessageGroup(StatesGroup):
     add_contact = State()
+    send_contact = State()
