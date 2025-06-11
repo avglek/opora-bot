@@ -47,7 +47,7 @@ class PriceORM(Base):
     month:Mapped[int] = mapped_column(Integer,nullable=True)
     two_week:Mapped[int] = mapped_column(Integer,nullable=True)
     day:Mapped[int] = mapped_column(Integer,nullable=True)
-    currency:Mapped[int] = mapped_column(Integer,nullable=True)
+    currency:Mapped[str] = mapped_column(String,nullable=True)
     rents:Mapped[List[RentORM]] = relationship("RentORM", back_populates="price")
 
     def __repr__(self):

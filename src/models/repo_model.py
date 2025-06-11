@@ -11,21 +11,22 @@ class Category(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class Price(BaseModel):
+    id: int | None = None
+    month: int
+    two_week: int | None = None
+    day: int | None = None
+    currency: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 class Rent(BaseModel):
     id:int|None = None
     name:str
     description:str|None = None
     img:str
     price_id:int|None = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-class Price(BaseModel):
-    id:int|None = None
-    month:int
-    two_week:int|None = None
-    day:int|None = None
-    currency:str|None = None
+    price:Price|None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -36,6 +37,7 @@ class Order(BaseModel):
     period_id:int
     summa:int|None = None
     rent_id:int|None = None
+    rent:Rent|None = None
     user_id:int|None = None
     create_dt:datetime|None = None
     accept_dt:datetime|None = None
@@ -67,3 +69,5 @@ class OrderInfo:
     period_ru:str
     price:int
     currency:str
+
+

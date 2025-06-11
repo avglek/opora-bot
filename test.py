@@ -1,8 +1,5 @@
-from config import Settings,database_url
+from src.utils.guid import Guid
 
 print('Test config')
 
-settings = Settings()
-
-print(settings)
-print(database_url)
+print(Guid.get_order_number())

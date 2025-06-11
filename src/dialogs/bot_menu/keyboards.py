@@ -76,3 +76,4 @@ def add_to_order_keyboard(on_click):
     return Column(
         Button(Const(LEXICON_RU['/add_to_order']), id = 'b_add_to_order', on_click = on_click)
     )
+

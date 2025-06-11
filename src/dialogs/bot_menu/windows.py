@@ -5,7 +5,7 @@ from aiogram_dialog import Window, DialogManager
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.kbd import Cancel, Back
 from aiogram_dialog.widgets.media import DynamicMedia
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const, Format, List
 from src.dialogs.bot_menu import selected, states, getters, keyboards
 from src.lexicon.lexicon_ru import LEXICON_RU, CONST_BACK
 
@@ -106,6 +106,11 @@ def add_to_order_window()-> Window:
 def order_window()-> Window:
     return Window(
         Const(LEXICON_RU['/order_info']),
+        Const('Ваш заказ:'),
+        List(
+            Format('{item.rent.name} - {item.quantity}'),
+            items='orders',
+        ),
         Back(Const(CONST_BACK)),
         getter=getters.get_all_orders,
         state=states.OrderRent.order_info

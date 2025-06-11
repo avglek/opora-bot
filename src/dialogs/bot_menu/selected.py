@@ -1,11 +1,11 @@
 from typing import Any
 
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Select
 
 from src.dialogs.bot_menu.states import BotMenu, MessageGroup, OrderRent
-from src.models.repo_model import User
+from src.models.repo_model import User, Order
 from src.services.repo import Repo
 
 
@@ -49,17 +49,26 @@ async def on_chosen_price_info(c: CallbackQuery, widget:Select, manager:DialogMa
 
 async def on_chosen_add_to_order(m:Message, widget:Select, manager:DialogManager,quantity:str):
     ctx = manager.current_context()
-    print(m.from_user)
-    user = User(
+    user:User = User(
         telegram_id=m.from_user.id,
         firstname=m.from_user.first_name,
         lastname=m.from_user.last_name,
         name=m.from_user.username
     )
-    ctx.dialog_data.update(
+    order:Order = Order(
         rent_id=ctx.start_data['rent_id'],
         period_id=ctx.start_data['period_id'],
-        quantity=quantity,
-        user=user
+        quantity=int(quantity),
+    )
+    ctx.dialog_data.update(
+        order = order,
+        user = user
     )
     await manager.switch_to(OrderRent.order_info)
+
+async def send_contact(cq: CallbackQuery, _, dialog_manager: DialogManager):
+    markup = ReplyKeyboardMarkup(keyboard=[[
+        KeyboardButton(text="Поделиться контактом", request_contact=True)
+    ]], resize_keyboard=True)
+    message = await cq.message.answer("Нажмите на кнопку ниже:", reply_markup=markup)
+    dialog_manager.dialog_data["message_id"] = message.message_id

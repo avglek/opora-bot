@@ -4,7 +4,7 @@ from datetime import datetime
 from src.dao.dao import CategoryDao, PriceDao, RentDao, UserDao, OrderDao
 from src.dao.database import connection
 from src.dao.models import OrderORM, UserORM
-from src.models.repo_model import User, Order
+from src.models.repo_model import User, Order, OrderInfo
 from src.services.repo import Repo
 
 
@@ -29,25 +29,34 @@ async def add_order(session, **kwargs):
     await session.commit()
     return id
 
+@connection
+async def get_orders(session, **kwargs):
+    return await Repo.get_all_orders(session=session, **kwargs)
 
+@connection
+async def get_order_info(session, **kwargs):
+    return await Repo.get_order_info(session=session, **kwargs)
+
+@connection
+async def get_rents(session, **kwargs):
+    return await Repo.get_rents_by_category(session=session, **kwargs)
+
+
+#{'quantity': 8, 'period_id': 2, 'rent_id': 8, 'user_id': 1}
 async def main() -> None:
 
     print('Starting...')
 
-    order:Order = Order(
-        user_id=1,
-        rent_id=1,
-        period_id=1,
-        quantity=10,
-        create_dt=datetime.now(),
-    )
+    orders = await get_orders(user_id=1)
+
+    info = list()
+    for order in orders:
+        info.append(order)
+
+    for i in info:
+        print(i)
 
 
-    print(order)
-
-    id = await add_order(values=order)
-
-    print(id)
 
 
 if __name__ == "__main__":

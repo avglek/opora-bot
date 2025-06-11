@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.dao.dao import CategoryDao, RentDao, PriceDao, OrderDao
+from src.dao.dao import CategoryDao, RentDao, PriceDao, OrderDao, UserDao
+from src.dao.models import UserORM
 from src.lexicon.lexicon_ru import PRICE_PERIOD
-from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo, Order
+from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo, Order, User
+from src.utils.guid import Guid
 
 
 class Repo:
@@ -13,6 +17,13 @@ class Repo:
             result = list()
             rows = await RentDao.get_by_category(category_id=category_id,session=session)
             for row in rows:
+                # item = Rent(
+                #     id=row.id,
+                #     name=row.name,
+                #     description=row.description,
+                #     price_id=row.price_id,
+                #     img=row.img
+                # )
                 item = Rent.model_validate(row)
                 result.append(item)
 
@@ -38,7 +49,7 @@ class Repo:
     @staticmethod
     async def get_rent_by_id(rent_id:int, session: AsyncSession)->Rent|None:
         if session:
-            row = await RentDao.find_one_or_none_by_id(data_id=rent_id,session=session)
+            row = await RentDao.get_by_id_with_prices(rent_id=rent_id,session=session)
             return Rent.model_validate(row)
         else:
             return None
@@ -60,6 +71,7 @@ class Repo:
 
     @staticmethod
     async def get_order_info(rent_id:int,period_id:int,session: AsyncSession)->OrderInfo|None:
+        print(rent_id,period_id)
 
         if session:
             rent:Rent|None = await RentDao.get_by_id_with_prices(rent_id=rent_id,session=session)
@@ -83,9 +95,9 @@ class Repo:
             return None
 
     @staticmethod
-    async def get_all_orders(session: AsyncSession)->list[OrderInfo]:
+    async def get_all_orders(session: AsyncSession,user_id:int)->list[Order]:
         if session:
-            orders = await OrderDao.get_all(session=session)
+            orders = await OrderDao.get_all_by_user(session=session,user_id=user_id)
 
             result = list()
             for order in orders:
@@ -98,9 +110,29 @@ class Repo:
 
     @staticmethod
     async def add_order(order:Order,session: AsyncSession)->bool:
+        if not order.number:
+            order.number = Guid.get_order_number()
         if session:
             await OrderDao.add(values=order,session=session)
             return True
         else:
             return False
+
+    @staticmethod
+    async def add_user_order(user:User,order:Order,session: AsyncSession)->int:
+
+        if session:
+            _user:User|None = await UserDao.get_user_by_telegram_id(telegram_id=user.telegram_id,session=session)
+            if not _user:
+                record = await UserDao.add(values=user,session=session)
+                if record:
+                    _user = User.model_validate(record)
+                else:
+                    return 0
+
+            order.user_id = _user.id
+            await OrderDao.add(values=order,session=session)
+            return _user.id
+        else:
+            return 0
 

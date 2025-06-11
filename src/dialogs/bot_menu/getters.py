@@ -7,6 +7,7 @@ from aiogram_dialog.api.entities import MediaAttachment
 from config import Settings
 from src.dialogs.bot_menu.states import BotMenu
 from src.lexicon.lexicon_ru import MAIN_MENU, LEXICON_RU
+from src.models.repo_model import User, Order
 
 from src.services.repo import Repo, Rent
 
@@ -73,7 +74,15 @@ async def get_order_info(dialog_manager: DialogManager, **middleware_data):
     return {'order_info':order_info}
 
 async def get_all_orders(dialog_manager: DialogManager, **middleware_data):
+    session = middleware_data.get('session_with_commit')
     ctx = dialog_manager.current_context()
-    print(ctx.dialog_data)
+    user:User = ctx.dialog_data.get('user')
+    order:Order = ctx.dialog_data.get('order')
 
-    return {'quantity':90}
+    user_id = await Repo.add_user_order(user=user,order=order,session=session)
+
+    all_orders = await Repo.get_all_orders(session=session,user_id=user_id)
+    for order in all_orders:
+        print(order)
+
+    return {'orders':all_orders}
