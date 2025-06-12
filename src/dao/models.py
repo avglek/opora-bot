@@ -58,8 +58,12 @@ class OrderORM(Base):
 
     number:Mapped[str] = mapped_column(String,nullable=True)
     quantity:Mapped[int] = mapped_column(Integer,nullable=False)
-    summa:Mapped[int] = mapped_column(Integer,nullable=True)
     period_id:Mapped[int] = mapped_column(Integer,nullable=False)
+    period_ru:Mapped[str] = mapped_column(String,nullable=True)
+    price:Mapped[int] = mapped_column(Integer,nullable=True)
+    value:Mapped[str] = mapped_column(String,nullable=True)
+    summa:Mapped[int] = mapped_column(Integer,nullable=True)
+    status:Mapped[int] = mapped_column(Integer,nullable=True)
     rent_id:Mapped[int] = mapped_column(ForeignKey("rents.id"))
     rent:Mapped[RentORM] = relationship("RentORM",back_populates="orders",overlaps="rents")
     user_id:Mapped[int] = mapped_column(ForeignKey("users.id"))

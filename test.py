@@ -2,4 +2,9 @@ from src.utils.guid import Guid
 
 print('Test config')
 
-print(Guid.get_order_number())
+t = 'руб/шт.'
+
+t2 = t.split('/')[1]
+
+print('t:',t)
+print('t2:',t2)

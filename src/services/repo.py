@@ -5,6 +5,7 @@ from src.dao.dao import CategoryDao, RentDao, PriceDao, OrderDao, UserDao
 from src.dao.models import UserORM
 from src.lexicon.lexicon_ru import PRICE_PERIOD
 from src.models.repo_model import Category, Rent, PriceInfo, OrderInfo, Order, User
+from src.utils.const import Status
 from src.utils.guid import Guid
 
 
@@ -79,14 +80,14 @@ class Repo:
             price_info = 0,
             period = ''
 
-            match period_id:
-                case '1':
+            match int(period_id):
+                case 1:
                     price_info = rent.price.month
                     period = 'month'
-                case '2':
+                case 2:
                     price_info = rent.price.two_week
                     period = 'two_week'
-                case '3':
+                case 3:
                     price_info = rent.price.day
                     period = 'day'
 
@@ -130,7 +131,23 @@ class Repo:
                 else:
                     return 0
 
+            order_info = await Repo.get_order_info(rent_id=order.rent_id,period_id=order.period_id,session=session)
+
             order.user_id = _user.id
+            order.number = Guid.get_random_number()
+            order.create_dt = datetime.now()
+            order.status = Status.NEW.value
+            order.period_ru = order_info.period_ru
+            order.price = order_info.price
+            order.value = order_info.currency.split('/')[1]
+            order.summa = order.quantity * order_info.price
+
+
+            print('order:',order)
+
+
+            print('order_info:',order_info)
+
             await OrderDao.add(values=order,session=session)
             return _user.id
         else:

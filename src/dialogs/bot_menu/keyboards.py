@@ -3,7 +3,7 @@ import operator
 from aiogram_dialog.widgets.kbd import ScrollingGroup, Select, Column, Button
 from aiogram_dialog.widgets.text import Format, Const
 
-from src.lexicon.lexicon_ru import LEXICON_RU, CONST_HOME
+from src.lexicon.lexicon_ru import LEXICON_RU, CONST_HOME, CONST_CATEGORY
 
 SCROLLING_HEIGHT = 6
 
@@ -77,3 +77,7 @@ def add_to_order_keyboard(on_click):
         Button(Const(LEXICON_RU['/add_to_order']), id = 'b_add_to_order', on_click = on_click)
     )
 
+def return_to_category_keyboard(on_click):
+    return Column(
+        Button(Const(CONST_CATEGORY), id = 'b_return_to_category', on_click = on_click)
+    )

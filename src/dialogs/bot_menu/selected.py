@@ -81,3 +81,11 @@ async def get_contact(msg: Message,_, dialog_manager: DialogManager):
     print(msg.from_user.id)
     print(msg.contact.phone_number)
     await msg.answer(LEXICON_RU['/success_contact'])
+
+
+async def on_go_to_categories(c: CallbackQuery, _,manager:DialogManager):
+    await manager.switch_to(BotMenu.select_categories)
+
+
+async def on_chosen_return_to_category(c: CallbackQuery, _, manager: DialogManager):
+    await manager.done()

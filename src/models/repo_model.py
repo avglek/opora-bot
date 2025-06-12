@@ -35,7 +35,11 @@ class Order(BaseModel):
     number:str|None = None
     quantity:int
     period_id:int
+    period_ru:str|None = None
+    price:int|None = None
+    value:str|None = None
     summa:int|None = None
+    status:int|None = None
     rent_id:int|None = None
     rent:Rent|None = None
     user_id:int|None = None

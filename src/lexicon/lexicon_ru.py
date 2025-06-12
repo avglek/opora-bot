@@ -31,6 +31,7 @@ LEXICON_RU: dict[str, str] = {
     '/continue': 'Что бы продолжить ведите команду /start',
 
     'error_category': 'Нет такой категории! Выберите другую.',
+    'error_number': 'Введите число!'
 }
 
 MAIN_MENU: [tuple[str, int]] = [
@@ -47,3 +48,4 @@ PRICE_PERIOD: dict[str, str] = {
 
 CONST_HOME:str = '🏠 Главное меню'
 CONST_BACK:str = '⬅️ Назад'
+CONST_CATEGORY:str = '📂 Категории'
